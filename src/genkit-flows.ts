@@ -27,7 +27,10 @@ const codePolishingPrompt = ai.definePrompt({
     name: 'codePolishingPrompt',
     input: { schema: PolishCodeInputSchema },
     output: { schema: PolishCodeOutputSchema },
-    prompt: `Polish the following code, correct any errors and ensure it is well-formatted and efficient:\n\`\`\`{{code}}\`\`\``,
+    prompt: `You are a code polishing expert. Your goal is to take the provided code and improve it. 
+Correct any errors, improve code formatting, and ensure the code is efficient and follows best practices.
+
+Here is the code to polish:\n\`\`\`{{code}}\`\`\``,
 });
 
 // Flow definition for polishing the code
@@ -37,13 +40,18 @@ const codePolishingFlow = ai.defineFlow<PolishCodeInputSchema, PolishCodeOutputS
     outputSchema: PolishCodeOutputSchema,
   },
     async (input) => {
-        const { output } = await codePolishingPrompt(input);
+        try {
+            const { output } = await codePolishingPrompt(input);
 
-        if (!output || !output.polishedCode) {
-            throw new Error('Polished code could not be generated.');
+            if (!output || !output.polishedCode) {
+                throw new Error('Polished code could not be generated.');
+            }
+
+            return output;
+        } catch (error: any) {
+            console.error('Error in codePolishingFlow:', error);
+            throw new Error(`Code polishing flow failed: ${error.message || 'Unknown error'}`);
         }
-
-        return output;
     }
 );
 
@@ -51,8 +59,8 @@ const codePolishingFlow = ai.defineFlow<PolishCodeInputSchema, PolishCodeOutputS
 export async function polishCodeFlow(input: PolishCodeInput): Promise<PolishCodeOutput> {
   try {
     return await codePolishingFlow(input);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error polishing the code:', error);
-    throw new Error('An error occurred while polishing the code.');
+    throw new Error(`An error occurred while polishing the code: ${error.message || 'Unknown error'}`);
   }
 }
