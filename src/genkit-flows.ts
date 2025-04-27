@@ -46,7 +46,7 @@ const codePolishingFlow = ai.defineFlow<
         inputSchema: PolishCodeInputSchema,
         outputSchema: PolishCodeOutputSchema,
     },
-    async (input) => {
+    async (input: any) => {
         const { output } = await codePolishingPrompt(input);
         
         // Assure that output exists and has the correct structure
