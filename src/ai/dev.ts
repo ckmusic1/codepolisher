@@ -2,18 +2,13 @@
 /**
  * @fileOverview Genkit configuration.
  */
-import { defineAuthProvider, defineModel, defineConfig } from 'genkit';
-import { googleAi } from '@genkit-ai/googleai';
-
-export const config = defineConfig({
+import { } from 'genkit';
+import { googleAI } from '@genkit-ai/googleai';
+import { z } from 'zod';
+export const config = {
   models: {
-    main: defineModel({
-      providers: [googleAi.vertexAi({ model: 'gemini-1.5-pro-002' })],
-    }),
+    main: {
+      providers: [googleAI()],
+    },
   },
-  // Configure auth providers here.
-  auth: {
-    // This defines the Firebase Authentication auth provider.
-    // firebase: defineAuthProvider.firebase(),
-  },
-});
+};
