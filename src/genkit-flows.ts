@@ -34,12 +34,12 @@ Here is the code to polish:\n\`\`\`{{code}}\`\`\``,
 });
 
 // Flow definition for polishing the code
-const codePolishingFlow = ai.defineFlow<PolishCodeInputSchema, PolishCodeOutputSchema>({
+const codePolishingFlow = ai.defineFlow<typeof PolishCodeInputSchema, typeof PolishCodeOutputSchema>({
     name: 'codePolishingFlow',
     inputSchema: PolishCodeInputSchema,
     outputSchema: PolishCodeOutputSchema,
-  },
-    async (input) => {
+  }, 
+    async (input: PolishCodeInput) => {
         try {
             const { output } = await codePolishingPrompt(input);
 
