@@ -1,5 +1,4 @@
 'use server';
-
 /**
  * @fileOverview Genkit flow for polishing code.
  *
@@ -8,37 +7,52 @@
  * - PolishCodeOutput - The return type for the polishCodeFlow function.
  */
 
-import { AIInstance } from './ai/ai-instance'; // Correction : AIInstance (classe en PascalCase)
+import { ai } from './ai/ai-instance';
 import { z } from 'zod';
 
 //Schemas
 const PolishCodeInputSchema = z.object({
-  code: z.string().describe('The code to be polished.'),
+    code: z.string().describe('The code to be polished.'),
 });
 export type PolishCodeInput = z.infer<typeof PolishCodeInputSchema>;
 
 const PolishCodeOutputSchema = z.object({
-  polishedCode: z.string().describe('The polished code.'),
+    polishedCode: z.string().describe('The polished code.'),
 });
 export type PolishCodeOutput = z.infer<typeof PolishCodeOutputSchema>;
 
-// Création d'une instance de AIInstance
-const aiInstance = new AIInstance();
 
-// Création du prompt
-const codePolishingPrompt = AIInstance.definePrompt({
-    prompt: `Polish this code:\n\`\`\`{{{code}}}\`\`\``,
+const codePolishingPrompt = ai.definePrompt({
+    name: 'codePolishingPrompt',
+    input: {
+        schema: z.object({
+            code: z.string().describe('The code to be polished.'),
+        }),
+    },
+    output: {
+        schema: z.object({
+            polishedCode: z.string().describe('The polished code.'),
+        }),
+    },
+    prompt: `Polish the following code, correct any errors and ensure it is well-formatted and efficient:\n\`\`\`{{code}}\`\`\``,
 });
 
-// Définition du flow
-export const codePolishingFlow = AIInstance.defineFlow({
-    name: "codePolishingFlow",
-    input: { schema: PolishCodeInputSchema },
-    output: { schema: PolishCodeOutputSchema },
-    prompt: codePolishingPrompt,
-});
 
-// Fonction principale exportée
+const codePolishingFlow = ai.defineFlow<
+    typeof PolishCodeInputSchema,
+    typeof PolishCodeOutputSchema
+>(
+    {
+        name: 'codePolishingFlow',
+        inputSchema: PolishCodeInputSchema,
+        outputSchema: PolishCodeOutputSchema,
+    },
+    async (input) => {
+        const { output } = await codePolishingPrompt(input);
+        return output!;
+    }
+);
+
 export async function polishCodeFlow(input: PolishCodeInput): Promise<PolishCodeOutput> {
-    return {polishedCode: codePolishingFlow(input.code)};
+    return codePolishingFlow(input);
 }
