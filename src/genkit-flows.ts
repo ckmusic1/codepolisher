@@ -7,7 +7,8 @@
  * - PolishCodeOutput - The return type for the polishCodeFlow function.
  */
 
-import { ai } from '@/ai/ai-instance';
+import { ai } from './ai/ai-instance';
+import type { AI } from './ai/ai-instance';
 import { z } from 'zod';
 
 // Schemas
@@ -67,3 +68,4 @@ export async function polishCodeFlow(input: PolishCodeInput): Promise<PolishCode
         throw new Error('An error occurred while polishing the code.');
     }
 }
+
